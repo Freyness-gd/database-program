@@ -13,9 +13,9 @@
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
+#[Rr]elease/
+#[Rr]eleases/
+#x64/
 x86/
 bld/
 [Bb]in/
@@ -36,23 +36,23 @@ bld/
 TestResult.xml
 
 # Build Results of an ATL Project
-[Dd]ebugPS/
-[Rr]eleasePS/
-dlldata.c
+#[Dd]ebugPS/
+#[Rr]eleasePS/
+#dlldata.c
 
 # DNX
 project.lock.json
 project.fragment.lock.json
 artifacts/
 
-*_i.c
-*_p.c
-*_i.h
+#*_i.c
+#*_p.c
+#*_i.h
 *.ilk
 *.meta
-*.obj
-*.pch
-*.pdb
+#*.obj
+#*.pch
+#*.pdb
 *.pgc
 *.pgd
 *.rsp
@@ -62,10 +62,10 @@ artifacts/
 *.tlh
 *.tmp
 *.tmp_proj
-*.log
+#*.log
 *.vspscc
 *.vssscc
-.builds
+#.builds
 *.pidb
 *.svclog
 *.scc
@@ -259,3 +259,4 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/C++ with MySQL Program/x64/Release/C++ with.5A30BF51.tlog
