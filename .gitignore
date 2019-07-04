@@ -13,9 +13,9 @@
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
-#[Rr]elease/
-#[Rr]eleases/
-#x64/
+[Rr]elease/
+[Rr]eleases/
+x64/
 x86/
 bld/
 [Bb]in/
@@ -36,9 +36,9 @@ bld/
 TestResult.xml
 
 # Build Results of an ATL Project
-#[Dd]ebugPS/
-#[Rr]eleasePS/
-#dlldata.c
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
 
 # DNX
 project.lock.json
@@ -50,9 +50,9 @@ artifacts/
 #*_i.h
 *.ilk
 *.meta
-#*.obj
-#*.pch
-#*.pdb
+*.obj
+*.pch
+*.pdb
 *.pgc
 *.pgd
 *.rsp
@@ -62,7 +62,7 @@ artifacts/
 *.tlh
 *.tmp
 *.tmp_proj
-#*.log
+*.log
 *.vspscc
 *.vssscc
 #.builds
