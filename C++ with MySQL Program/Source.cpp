@@ -25,7 +25,7 @@
 #define EXAMPLE_HOST "localhost:3306"
 #define EXAMPLE_USER "root"
 #define EXAMPLE_PASS ""
-#define EXAMPLE_DB "test"
+#define EXAMPLE_DB "users_mysql"
 
 int insert_function(std::string database, int uIndex, int uScore, const std::string url, const std::string user, const std::string pass, std::string uName)
 
@@ -34,15 +34,17 @@ int insert_function(std::string database, int uIndex, int uScore, const std::str
 	{
 		sql::Driver *driver = get_driver_instance();
 		std::unique_ptr < sql::Connection > con(driver->connect(url, user, pass));
-		con->setSchema("users_mysql");
+		con->setSchema("test");
 		std::unique_ptr < sql::Statement > stmt(con->createStatement());
 
-		//boost::scoped_ptr< sql::PreparedStatement > prep_stmt(con->prepareStatement("SELECT userPassword = \"adminx\" FROM users"));
-		/*prep_stmt->setInt(1, uIndex);
+		boost::scoped_ptr< sql::PreparedStatement > prep_stmt(con->prepareStatement("INSERT INTO uname(id, name, score) VALUES (?, ?, ?)"));
+		prep_stmt->setInt(1, uIndex);
 		prep_stmt->setString(2, uName);
-		prep_stmt->setInt(3, uScore);*/
+		prep_stmt->setInt(3, uScore);
 
-		boost::scoped_ptr < sql::ResultSet > res(stmt->executeQuery("SELECT userPassword FROM users WHERE userIndex IN(\"1\")"));
+		prep_stmt->execute();
+
+		/*boost::scoped_ptr < sql::ResultSet > res(stmt->executeQuery("SELECT userPassword FROM users WHERE userIndex IN(\"1\")"));
 
 		std::string password = "adminx";
 
@@ -50,7 +52,7 @@ int insert_function(std::string database, int uIndex, int uScore, const std::str
 		res->next();
 		std::cout << ((res->getString("userPassword")) == password) << '\n';
 
-
+		*/
 	}
 
 	catch (sql::SQLException &e) {
@@ -169,7 +171,7 @@ int read_function(std::string database, int uIndex, int uScore, const std::strin
 
 int main(void)
 {
-	std::string databaseVar;
+	/*std::string databaseVar;
 	std::string tableVar;
 	std::cout << "Enter the database name: " << '\n';
 	std::cin >> databaseVar;
@@ -210,6 +212,11 @@ int main(void)
 
 	// Initialisation of variables needed for Connection with server and actions
 
-	std::cout << "Done." << std::endl;
+	std::cout << "Done." << std::endl;*/
+
+	UserInstance user_obj(EXAMPLE_DB, EXAMPLE_HOST);
+	user_obj.check_credentials();
+
+
 	return EXIT_SUCCESS;
 }
