@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "userClass.h"
-
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -21,44 +20,51 @@
 #include <cppconn/connection.h>
 #include <cppconn/metadata.h>
 
-UserInstance::UserInstance(std::string username, std::string password, std::string group, std::string account)
+UserInstance::UserInstance(std::string server_db, std::string server_url)
 {
-  check_credentials(username, password);
+  std::cout << "Username: " << '\n';
+  std::cin >> username;
+
+  std::cout << "Password: " << '\n';
+  std::cin >> temp_pass;
+
 }
 
-int UserInstance::check_credentials(std::string username, std::string password)
+int UserInstance::check_credentials()
 {
-  const std::string url = "localhost:3306";
-  const std::string user = "root";
-  const std::string pass = "";
-  const std::string database = "users_mysql";
-  std::string testIndex = "1";
-//  std::string command = "SELECT userIndex FROM users WHERE userIndex IN" + " (" + testIndex + ")";
-
-  std::string command;
-
   try
   {
-    sql::Driver *driver = get_driver_instance();
-    std::unique_ptr < sql::Connection > con(driver->connect(url, user, pass));
+    std::cout << username << '\n';
+    std::cout << temp_pass << '\n';
+
+    std::string log_com = "SELECT userPassword FROM users WHERE userName IN (\""
+                              + username + "\")";
+
+    std::cout << log_com << '\n';
+
+    sql::Driver *user_driver = get_driver_instance();
+    std::unique_ptr < sql::Connection > con(user_driver->connect(url, db_user, db_pass));
     con->setSchema(database);
-    std::unique_ptr < sql::Statement > stmt(con->createStatement());
+    std::unique_ptr < sql::Statement > statement(con->createStatement());
 
-    boost::scoped_ptr< sql::PreparedStatement > prep_stmt(con->prepareStatement(command));
-    int executeReturn = prep_stmt->execute();
+    boost::scoped_ptr < sql::ResultSet >  login_res(statement->executeQuery(log_com));
 
-    std::cout << "executeReturn: " << executeReturn << '\n';
+    std::cout << "Rows: " << login_res->rowsCount() << '\n';
+    login_res->next();
+    std::cout << ((login_res->getString("userPassword")) == temp_pass) << '\n';
+    std::cout << "Pass not deleted: " << temp_pass << '\n';
+    temp_pass.clear();
+    std::cout << "Pass deleted: " << temp_pass << '\n';
+
   }
 
-  catch (sql::SQLException &e)
+  catch(sql::SQLException &error_code)
   {
-    std::cout << "# ERR: " << e.what();
-		std::cout << " (MySQL error code: " << e.getErrorCode();
-		std::cout << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+    std::cout << "#ERR: " << error_code.what();
+    std::cout << " (MySQL error code: " << error_code.getErrorCode();
+    std::cout << ", SQLState: " << error_code.getSQLState() << " )" << std::endl;
 
-		return 1;
+    return 1;
   }
-
   return 0;
-
 }
