@@ -20,22 +20,25 @@
 #include <cppconn/connection.h>
 #include <cppconn/metadata.h>
 
-UserInstance::UserInstance(std::string server_db, std::string server_url)
-{
-  std::cout << "Username: " << '\n';
-  std::cin >> username;
 
-  std::cout << "Password: " << '\n';
-  std::cin >> temp_pass;
+UserInstance::UserInstance(std::string server_db, std::string server_url,
+                           std::string server_user, std::string server_pass)
+{
+  database = server_db;
+  url = server_url;
+  db_user = server_user;
+  db_pass = server_pass;
 
 }
 
-int UserInstance::check_credentials()
+int UserInstance::credentialCheck()
 {
   try
   {
-    std::cout << username << '\n';
-    std::cout << temp_pass << '\n';
+    std::cout << "Username: " << '\n';
+    std::cin >> username;
+    std::cout << "Password: " << '\n';
+    std::cin >> temp_pass;
 
     std::string log_com = "SELECT userPassword FROM users WHERE userName IN (\""
                               + username + "\")";
@@ -49,22 +52,67 @@ int UserInstance::check_credentials()
 
     boost::scoped_ptr < sql::ResultSet >  login_res(statement->executeQuery(log_com));
 
-    std::cout << "Rows: " << login_res->rowsCount() << '\n';
     login_res->next();
     std::cout << ((login_res->getString("userPassword")) == temp_pass) << '\n';
-    std::cout << "Pass not deleted: " << temp_pass << '\n';
+    switch((login_res->getString("userPassword")) == temp_pass)
+    {
+        case 1:  return 0;
+        case 0: std::cout << "Wrong Pasword" << '\n'; return 1;
+    }
+
     temp_pass.clear();
-    std::cout << "Pass deleted: " << temp_pass << '\n';
 
   }
 
-  catch(sql::SQLException &error_code)
+  catch(sql::SQLException &e)
   {
-    std::cout << "#ERR: " << error_code.what();
-    std::cout << " (MySQL error code: " << error_code.getErrorCode();
-    std::cout << ", SQLState: " << error_code.getSQLState() << " )" << std::endl;
+    error.error_code = e.getErrorCode();
+    error.error_text = e.what();
+    error.sql_state = e.getSQLState();
+
+    UserInstance::errorCheck(error);
 
     return 1;
   }
+
   return 0;
+}
+
+
+void UserInstance::errorCheck(Error error)
+{
+  std::cout << "Error Check" << '\n';
+  std::cout << error.error_code << '\n';
+  std::cout << error.sql_state << '\n';
+  std::cout << error.error_text << '\n';
+
+  switch(error.error_code)
+  {
+    case 0: std::cout << "SQL Query ERROR: " << error.error_text << '\n'; break;
+    case 1049: std::cout << "Unknown Database!" << '\n'; exit(1049);
+    case 2003: std::cout << "Connection with Server Failed" << '\n';
+               connError();
+               std::cout << "Connection Established" << '\n';
+               break;
+    default: std::cout << "Uknown Problem with code: " <<
+                           error.error_code << '\n'; exit(error.error_code);
+  }
+}
+
+void UserInstance::connError()
+{
+  bool conn_index = true;
+  sql::Driver *driver = get_driver_instance();
+
+  while(conn_index)
+  {
+    try
+    {
+      driver->connect(url, db_user, db_pass);
+      conn_index = false;
+    }
+    catch(sql::SQLException &e)
+    { std::cout << "Trying to connect to Server!" << '\n'; }
+  }
+
 }

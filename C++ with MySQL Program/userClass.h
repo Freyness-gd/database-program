@@ -25,9 +25,19 @@
 #include <cppconn/metadata.h>
 
 
+
+
 class UserInstance
 {
 private:
+
+  struct Error
+  {
+    int error_code = 0;
+    std::string error_text = "";
+    std::string sql_state = "0";
+  };
+
   std::string database {"users_mysql"};
   std::string url {"localhost:3306"};
   std::string db_user {"root"};
@@ -38,17 +48,26 @@ private:
   std::string group {"default"};
   std::string type {"default"};
 
-public:
-  UserInstance() = default;
-  UserInstance(std::string server_db, std::string server_url);
+  Error error;
 
-  int check_credentials();
+
+public:
+
+  UserInstance() = default;
+  UserInstance(std::string server_db, std::string server_url,
+               std::string server_user, std::string server_pass);
+
+  int credentialCheck();
+  void errorCheck(Error error);
   void account_recall();
   int create_invoice();
   void inbox();
   void finance_plan();
   int request_credit();
   void show_card();
+
+private:
+  void connError();
 
 };
 
