@@ -29,6 +29,12 @@
 
 class UserInstance
 {
+public:
+  std::string username {"guest"};
+  std::string type {"guest"};
+  std::string group {"guest"};
+  std::string account {"CN default"};
+
 private:
 
   struct Error
@@ -38,17 +44,19 @@ private:
     std::string sql_state = "0";
   };
 
+  Error error;
+
   std::string database {"users_mysql"};
   std::string url {"localhost:3306"};
   std::string db_user {"root"};
   std:: string db_pass {""};
-  std::string username {"default"};
-  std::string temp_pass {""};
-  std::string account {"CN default"};
-  std::string group {"default"};
-  std::string type {"default"};
 
-  Error error;
+    std::string temp_pass {""};
+
+  sql::Driver *user_driver;
+  std::unique_ptr < sql::Connection > user_conn;
+  std::unique_ptr < sql::Statement > user_stmt;
+  boost::scoped_ptr < sql::ResultSet > query_res;
 
 
 public:
@@ -58,16 +66,29 @@ public:
                std::string server_user, std::string server_pass);
 
   int credentialCheck();
-  void errorCheck(Error error);
+
+  void setUp();
+
+  void printInfo();
+
   void account_recall();
+
   int create_invoice();
+
   void inbox();
+
   void finance_plan();
+
   int request_credit();
+
   void show_card();
+
 
 private:
   void connError();
+
+  void errorCheck(Error error);
+
 
 };
 
